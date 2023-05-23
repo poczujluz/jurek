@@ -9,6 +9,7 @@ waz_y=10
 waz_x=5
 game_over=false
 
+
 generator_jedzenia() {
 	mysz_y=$((1 + $RANDOM%10))
 	mysz_x=$((1 + $RANDOM%20))
