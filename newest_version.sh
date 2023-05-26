@@ -52,7 +52,9 @@ iniciate_snake() {
 
 #Read
 read_input() {
+    stty -echo
     read -t 0.2 -rsn1 KEY
+    stty echo
     case "$KEY" in
         "w") DIRECTION="w";;
         "s") DIRECTION="s";;

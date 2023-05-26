@@ -77,7 +77,9 @@ start_option() {
 gameoptoins_option() {
     tput cup $arrow_line $((options_column-2))
     echo -e "${NC}>${BOLD} GAME OPTIONS ${NC}<"
+    stty -echo
     read -rsn1 KEY
+    stty echo
     case "$KEY" in
         "x")
             source ./options_page.sh
@@ -100,7 +102,9 @@ gameoptoins_option() {
 players_option() {
     tput cup $arrow_line $((options_column-2))
     echo -e "${NC}>${BOLD} BEST PLAYERS ${NC}<"
+    stty -echo
     read -rsn1 KEY
+    stty echo
     case "$KEY" in
         "x")
             source ./best_players_page.sh
@@ -123,7 +127,9 @@ players_option() {
 informations_option() {
     tput cup $arrow_line $((options_column-2))
     echo -e "${NC}>${BOLD} INFORMATIONS ${NC}<"
+    stty -echo
     read -rsn1 KEY
+    stty echo
     case "$KEY" in
         "x")
             source ./info_page.sh
@@ -146,10 +152,11 @@ informations_option() {
 exit_option() {
     tput cup $arrow_line $((options_column-2))
     echo -e "    ${NC}> ${BOLD}EXIT ${NC}<"
+    stty -echo
     read -rsn1 KEY
+    stty echo
     case "$KEY" in    
         "x")
-            clear
             exit
             ;;
         "w")
@@ -162,6 +169,7 @@ exit_option() {
 }
 
 clear
+trap 'clear' exit
 lines=24
 cols=80
 avr_col=40
