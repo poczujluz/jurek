@@ -4,6 +4,9 @@ declare -i rows
 declare -i columns
 declare -A board
 declare game_over=false
+score=0
+SNAKE_COLOR='\033[0;32m'
+MOUSE_COLOR='\033[0;37m'
 
 make_simple_board() {
     rows=10
@@ -11,11 +14,11 @@ make_simple_board() {
     box_char_wall="║"
     box_char_floor="═"
     blank=" "
-    for ((i=0; i<rows+1; i++)); do
-        for ((j=0; j<columns+1; j++)); do
-            if ((j == 0 || j == columns)); then
+    for ((i=0; i<$((rows+2)); i++)); do
+        for ((j=0; j<$((columns+2)); j++)); do
+            if ((j == 0 || j == columns+1)); then
                 board[$i,$j]=$box_char_wall
-            elif ((i == 0 || i == rows)); then
+            elif ((i == 0 || i == rows+1)); then
                 board[$i,$j]=$box_char_floor
             else
                 board[$i,$j]=$blank
@@ -23,19 +26,27 @@ make_simple_board() {
         done
     done
     board[0,0]="╔"
-    board[10,0]="╚"
-    board[0,20]="╗"
-    board[10,20]="╝"
+    board[$((rows+1)),0]="╚"
+    board[0,$((columns+1))]="╗"
+    board[$((rows+1)),$((columns+1))]="╝"
+}
+
+
+generate_mouse() {
+    mouse="■" 
+    mouse_row=$(((1+$new_zero_row) + $RANDOM%10))
+	mouse_column=$(((1+$new_zero_column) + $RANDOM%20))
+    tput cup $mouse_row $mouse_column
+    echo -en "${MOUSE_COLOR}$mouse"
 }
 
 iniciate_snake() {
     length=2
-    tail="o"
-    tail_row=6
-    tail_column=10
-    head="O"
-    head_row=6
-    head_column=11
+    tail_row=$((new_zero_row+6))
+    tail_column=$((new_zero_column+10))
+    head="█"
+    head_row=$((new_zero_row+6))
+    head_column=$((new_zero_column+10))
     snake_char="o" 
 }
 
@@ -82,12 +93,21 @@ snake_move() {
             head_column=$((head_column + 1))
             ;;    
     esac
+    if ((head_column==mouse_column && head_row==mouse_row)); then
+        score=$((score+1))
+        generate_mouse
+    fi
+    if ((head_column==new_zero_column || head_column==new_zero_column+columns+1 || head_row==new_zero_row || head_row==new_zero_row+rows+1)); then
+        game_over=true
+    fi
 }
 
 out_board() {
-    clear
-for ((i=0; i<rows+1; i++)); do
-    for ((j=0; j<columns+1; j++)); do
+new_zero_row=6
+new_zero_column=28
+for ((i=0; i<rows+2; i++)); do
+    tput cup $((i+$new_zero_row)) $new_zero_column
+    for ((j=0; j<columns+2; j++)); do
         echo -n "${board[$i,$j]}"
     done
   echo
@@ -95,17 +115,39 @@ done
 }
 
 #Game main
+tput civis
+clear
+lines=24
+cols=80
+avr_col=40
+avr_row=12
+tput cup 0 0
+    echo -ne "${NC}#"
+    for ((i=0; i<$((cols-2)); i++)); do
+        echo -n "-"
+    done
+    echo -n "#"
+tput cup $(($lines+1)) 0
+    echo -n "#"
+    for ((i=0; i<$((cols-2)); i++)); do
+        echo -n "-"
+    done
+    echo -n "#"
 make_simple_board
 out_board
 iniciate_snake
     tput cup $head_row $head_column
-        echo -n $head
+        echo -ne "${SNAKE_COLOR}$head"
     tput cup $tail_row $tail_column
-        echo -n $tail
+        echo -ne "${SNAKE_COLOR}$head"
+generate_mouse
 while [[ $game_over == false ]]; do
     read_input 
     snake_move
         tput cup $head_row $head_column
-            echo -n $head
+            echo -ne "${SNAKE_COLOR}$head"
 done
-echo "Game over!"
+tput cup $avr_row $((avr_col-6))
+echo -en "${NC}Game over!!"
+sleep 5
+source ./title_page.sh
