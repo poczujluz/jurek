@@ -9,8 +9,8 @@ BLUE='\033[0;34m'
 BOLD='\033[1;34m'
 
 draw_jorek() {
-    word_title_line=5
-    jorek_column=18
+    word_title_line=$((avr_row-7))
+    jorek_column=$((avr_col-22))
     #43 szerokosc 7 wysokosc
 tput cup $word_title_line  $jorek_column
 ((word_title_line++))
@@ -36,7 +36,7 @@ tput cup $word_title_line $jorek_column
 }
 
 draw_options() {
-options_column=35
+options_column=$((avr_col-5))
 ((word_title_line++))
 arrow_line=$word_title_line
 tput cup $word_title_line $options_column
@@ -170,10 +170,10 @@ exit_option() {
 
 clear
 trap 'clear' exit
-lines=24
-cols=80
-avr_col=40
-avr_row=12
+lines=$LINES
+cols=$COLUMNS
+avr_col=$((cols/2))
+avr_row=$((lines/2))
 tput cup 0 0
     echo -ne "${NC}#"
     for ((i=0; i<$((cols-2)); i++)); do

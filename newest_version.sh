@@ -105,8 +105,8 @@ snake_move() {
 }
 
 out_board() {
-new_zero_row=6
-new_zero_column=28
+new_zero_row=$((avr_row-6))
+new_zero_column=$((avr_col-12))
 for ((i=0; i<rows+2; i++)); do
     tput cup $((i+$new_zero_row)) $new_zero_column
     for ((j=0; j<columns+2; j++)); do
@@ -119,10 +119,6 @@ done
 #Game main
 tput civis
 clear
-lines=24
-cols=80
-avr_col=40
-avr_row=12
 tput cup 0 0
     echo -ne "${NC}#"
     for ((i=0; i<$((cols-2)); i++)); do
@@ -149,7 +145,9 @@ while [[ $game_over == false ]]; do
         tput cup $head_row $head_column
             echo -ne "${SNAKE_COLOR}$head"
 done
-tput cup $avr_row $((avr_col-6))
+tput cup $((avr_row-1)) $((avr_col-6))
 echo -en "${NC}Game over!!"
+stty -echo
 sleep 5
+stty echo
 source ./title_page.sh
