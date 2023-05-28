@@ -1,6 +1,6 @@
 #!/bin/bash
 
-C='\033[0m' #no color
+NC='\033[0m' #no color
 RED='\033[0;31m'
 ORANGE='\033[0;33m'
 PURPLE='\033[0;35m'
