@@ -77,8 +77,8 @@ new_tail() {
     board[$(($tail_row-new_zero_row)),$(($tail_column-$new_zero_column))]=" "
     old_tail_row=$tail_row
     old_tail_column=$tail_column
-    tail_row=snake[$(($len-1)),0]
-    tail_column=snake[$(($len-1)),0]
+    tail_row=${snake[$((len-1)),0]}
+    tail_column=${snake[$((len-1)),1]}
 }
 
 
@@ -108,9 +108,9 @@ snake_move() {
         generate_mouse
         snake[$(($len+1)),0]=$old_tail_column
         snake[$(($len+1)),1]=$old_tail_column
-        for ((i=0; i<$(($len-1)); i++)); do
-            snake[$(($len-i)),0]=${snake[$(($len-1-i)),0]}
-            snake[$(($len-i)),1]=${snake[$(($len-1-1)),1]}
+        for ((i=0; i<$((len-1)); i++)); do
+            snake[$((len-i)),0]=${snake[$((len-1-i)),0]}
+            snake[$((len-i)),1]=${snake[$((len-1-i)),1]}
         done
         snake[1,0]=$head_row
         snake[1,1]=$head_column
@@ -119,8 +119,8 @@ snake_move() {
         draw_tail
     else
         for ((i=0; i<$((len-1)); i++)); do
-            snake[$len,0]=${snake[$(($len-1)),0]}
-            snake[$len,1]=${snake[$(($len-1)),0]}
+            snake[$((len-i)),0]=${snake[$(($len-1-i)),0]}
+            snake[$((len-i)),1]=${snake[$(($len-1-i)),1]}
         done
         snake[1,0]=$head_row
         snake[1,1]=$head_column
