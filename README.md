@@ -1,3 +1,5 @@
 # jurek
-#It is a classic snake game written in bash.
-#Musisz mieć wszystkie pliki w jednym folderze. Aby uruchomić grę uruchom title_page.sh w terminalu.
+
+# It is a classic snake game written in bash.
+
+# You must have all game files in one folder to run the game and you run it. You start the game by running the title_0page.sh file.
