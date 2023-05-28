@@ -9,6 +9,8 @@ score=0
 SNAKE_COLOR='\033[0;32m'
 MOUSE_COLOR='\033[0;37m'
 mouse="■" 
+trap 'cleanup' exit
+stty -echo
 
 make_simple_board() {
     rows=10
@@ -66,9 +68,7 @@ iniciate_snake() {
 
 #Read
 read_input() {
-    stty -echo
     read -t 0.2 -rsn1 KEY
-    stty echo
     case "$KEY" in
         "w") DIRECTION="w";;
         "s") DIRECTION="s";;
@@ -80,9 +80,7 @@ read_input() {
 
 new_tail() {
     tput cup $tail_row $tail_column
-        stty echo
         echo -n " "
-        stty -echo
     board[$(($tail_row-new_zero_row)),$(($tail_column-$new_zero_column))]=" "
     old_tail_row=$tail_row
     old_tail_column=$tail_column
@@ -110,9 +108,7 @@ snake_move() {
     if ((head_column==mouse_column && head_row==mouse_row)); then
         score=$(($score+1))
         tput cup $(($new_zero_rows+18)) $(($new_zero_column+7))
-            stty echo
             echo -en "${NC}$score${GREEN}"
-            stty -echo
         len=$(($len+1))
         generate_mouse
         snake[$(($len+1)),0]=$old_tail_column
@@ -173,11 +169,11 @@ draw_snake() {
 
 
 #Game main
-tput civis
 clear
-echo -e $border
+echo -en $border
 tput cup $lines 0
-echo -e $border
+echo -en $border
+tput civis
 make_simple_board
 out_board
 iniciate_snake
@@ -189,7 +185,5 @@ while [[ $game_over == false ]]; do
 done
 tput cup $((avr_row-1)) $((avr_col-6))
 echo -en "${NC}Game over!!"
-stty -echo
-sleep 5
-stty echo
+sleep 2
 source ./title_page.sh

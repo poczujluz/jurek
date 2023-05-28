@@ -6,14 +6,25 @@ GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 BOLD='\033[1;34m'
 clear
-trap 'clear' exit
-trap 'stty -echo' exit
+trap 'cleanup' exit
 lines=$LINES
 cols=$COLUMNS
 avr_col=$((cols/2))
 avr_row=$((lines/2))
 stty -echo
 border="#"$(printf "%0.s-" $(seq 1 $((cols-2))))"#"
+
+write_centered() {
+    text=$1
+    length=${#text}
+    padding=$(( (cols - length) / 2 ))
+    printf "%${padding}s" && echo -en $text
+}
+
+cleanup() {
+    clear
+    stty echo
+}
 
 draw_jorek() {
     word_title_line=$((avr_row-7))
@@ -110,7 +121,7 @@ exit_option() {
             tput cup $arrow_line $((options_column-2))
             echo -e "${BLUE}      EXIT  "
             arrow_line=$((arrow_line-1))
-            informations_option
+            information_option
             ;;
     esac            
 }
