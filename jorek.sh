@@ -1,5 +1,6 @@
 #!/bin/bash
 
+declare -A snake
 declare -i rows
 declare -i columns
 declare -A board
@@ -41,13 +42,16 @@ generate_mouse() {
 }
 
 iniciate_snake() {
-    length=2
+    length=1
     tail_row=$((new_zero_row+6))
     tail_column=$((new_zero_column+10))
     head="█"
     head_row=$((new_zero_row+6))
-    head_column=$((new_zero_column+10))
-    snake_char="o" 
+    head_column=$((new_zero_column+11))
+    snake[0,0]=$((new_zero_row+6))
+    snake[0,1]=$((new_zero_column+11))
+    snake[1,0]=$((new_zero_row+6))
+    snake[1,1]=$((new_zero_column+10))
 }
 
 #Read
@@ -64,44 +68,44 @@ read_input() {
 	esac
 }
 
+new_tail() {
+    tput cup $tail_row $tail_column
+    echo -n " "
+    board[$((tail_row-new_zero_row)),$((tail_column-new_zero_column))]=" "
+    old_tail_row=$tail_row
+    old_tail_column=$tail_column
+    tail_row=$head_row
+    tail_column=$head_column
+}
+
+
 snake_move() {
+    new_tail
     case "$DIRECTION" in
 		"w") 
-            tput cup $tail_row $tail_column
-                echo -n " "
-            tail_row=$head_row
-            tail_column=$head_column
             head_row=$((head_row - 1))
         ;;
 		"s")     
-            tput cup $tail_row $tail_column
-                echo -n " "
-            tail_row=$head_row
-            tail_column=$head_column
             head_row=$((head_row + 1))
             ;;
 		"a")  
-            tput cup $tail_row $tail_column
-                echo -n " "
-            tail_row=$head_row
-            tail_column=$head_column
             head_column=$((head_column - 1))
             ;;
 		"d")     
-            tput cup $tail_row $tail_column
-                echo -n " "
-            tail_row=$head_row
-            tail_column=$head_column
             head_column=$((head_column + 1))
             ;;    
     esac
     if ((head_column==mouse_column && head_row==mouse_row)); then
         score=$((score+1))
         generate_mouse
+        tail_column=$old_tail_column
+        tail_row=$old_tail_row
+        draw_tail
     fi
     if ((head_column==new_zero_column || head_column==new_zero_column+columns+1 || head_row==new_zero_row || head_row==new_zero_row+rows+1)); then
         game_over=true
     fi
+    draw_head
 }
 
 out_board() {
@@ -115,6 +119,24 @@ for ((i=0; i<rows+2; i++)); do
   echo
 done
 }
+
+draw_head() {
+    board[$((head_row-new_zero_row)),$((head_column-new_zero_column))]=$head
+    tput cup $head_row $head_column
+    echo -ne "${SNAKE_COLOR}$head"    
+}
+
+draw_tail() {
+    board[$((tail_row-new_zero_row)),$((tail_column-new_zero_column))]=$head
+    tput cup $tail_row $tail_column
+    echo -ne "${SNAKE_COLOR}$head"
+}
+
+draw_snake() {
+    draw_head
+    draw_tail
+}
+
 
 #Game main
 tput civis
@@ -134,16 +156,11 @@ tput cup $(($lines+1)) 0
 make_simple_board
 out_board
 iniciate_snake
-    tput cup $head_row $head_column
-        echo -ne "${SNAKE_COLOR}$head"
-    tput cup $tail_row $tail_column
-        echo -ne "${SNAKE_COLOR}$head"
+draw_snake
 generate_mouse
 while [[ $game_over == false ]]; do
     read_input 
     snake_move
-        tput cup $head_row $head_column
-            echo -ne "${SNAKE_COLOR}$head"
 done
 tput cup $((avr_row-1)) $((avr_col-6))
 echo -en "${NC}Game over!!"
