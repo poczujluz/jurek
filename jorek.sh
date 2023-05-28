@@ -42,7 +42,7 @@ generate_mouse() {
 }
 
 iniciate_snake() {
-    length=2
+    len=2
     tail_row=$((new_zero_row+6))
     tail_column=$((new_zero_column+10))
     head="█"
@@ -52,6 +52,7 @@ iniciate_snake() {
     snake[1,1]=$((new_zero_column+11))
     snake[2,0]=$((new_zero_row+6))
     snake[2,1]=$((new_zero_column+10))
+    DIRECTION="w"
 }
 
 #Read
@@ -70,12 +71,14 @@ read_input() {
 
 new_tail() {
     tput cup $tail_row $tail_column
-    echo -n " "
-    board[$((tail_row-new_zero_row)),$((tail_column-new_zero_column))]=" "
+        stty echo
+        echo -n " "
+        stty -echo
+    board[$(($tail_row-new_zero_row)),$(($tail_column-$new_zero_column))]=" "
     old_tail_row=$tail_row
     old_tail_column=$tail_column
-    tail_row=snake[$(($length-1)),0]
-    tail_column=snake[$(($length-1)),0]
+    tail_row=snake[$(($len-1)),0]
+    tail_column=snake[$(($len-1)),0]
 }
 
 
@@ -97,17 +100,32 @@ snake_move() {
     esac
     if ((head_column==mouse_column && head_row==mouse_row)); then
         score=$(($score+1))
-        length=$(($lenght+1))
+        tput cup $(($new_zero_rows+18)) $(($new_zero_column+7))
+            stty echo
+            echo -en "${NC}$score${GREEN}"
+            stty -echo
+        len=$(($len+1))
         generate_mouse
-        for ((i=0; i<length; i++)); do
-            snake[$((length+1-i)),0]=
-            snake[$((length+1-i)),1]
+        snake[$(($len+1)),0]=$old_tail_column
+        snake[$(($len+1)),1]=$old_tail_column
+        for ((i=0; i<$(($len-1)); i++)); do
+            snake[$(($len-i)),0]=${snake[$(($len-1-i)),0]}
+            snake[$(($len-i)),1]=${snake[$(($len-1-1)),1]}
         done
+        snake[1,0]=$head_row
+        snake[1,1]=$head_column
         tail_column=$old_tail_column
         tail_row=$old_tail_row
         draw_tail
+    else
+        for ((i=0; i<$((len-1)); i++)); do
+            snake[$len,0]=${snake[$(($len-1)),0]}
+            snake[$len,1]=${snake[$(($len-1)),0]}
+        done
+        snake[1,0]=$head_row
+        snake[1,1]=$head_column
     fi
-    if ((head_column==new_zero_column || head_column==new_zero_column+columns+1 || head_row==new_zero_row || head_row==new_zero_row+rows+1)); then
+    if [ "${board[$((head_row-new_zero_row)),$((head_column-new_zero_column))]}" != " " ]; then
         game_over=true
     fi
     draw_head
@@ -123,7 +141,7 @@ for ((i=0; i<rows+2; i++)); do
     done
   echo
 done
-tput cup $(($new_zero_rows+12)) $new_zero_column
+tput cup $(($new_zero_rows+18)) $new_zero_column
 echo "Score: $score"
 }
 
@@ -149,17 +167,9 @@ draw_snake() {
 tput civis
 clear
 tput cup 0 0
-    echo -ne "${NC}#"
-    for ((i=0; i<$((cols-2)); i++)); do
-        echo -n "-"
-    done
-    echo -n "#"
+border="#"$(printf "%0.s-" $(seq 1 $((cols-2))))"#"
 tput cup $(($lines+1)) 0
-    echo -n "#"
-    for ((i=0; i<$((cols-2)); i++)); do
-        echo -n "-"
-    done
-    echo -n "#"
+border="#"$(printf "%0.s-" $(seq 1 $((cols-2))))"#"
 make_simple_board
 out_board
 iniciate_snake

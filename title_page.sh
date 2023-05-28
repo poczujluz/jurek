@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NC='\033[0m' #no color
+C='\033[0m' #no color
 RED='\033[0;31m'
 ORANGE='\033[0;33m'
 PURPLE='\033[0;35m'
@@ -167,7 +167,6 @@ exit_option() {
             ;;
     esac            
 }
-
 clear
 trap 'clear' exit
 lines=$LINES
@@ -175,17 +174,9 @@ cols=$COLUMNS
 avr_col=$((cols/2))
 avr_row=$((lines/2))
 tput cup 0 0
-    echo -ne "${NC}#"
-    for ((i=0; i<$((cols-2)); i++)); do
-        echo -n "-"
-    done
-    echo -n "#"
+border="#"$(printf "%0.s-" $(seq 1 $((cols-2))))"#"
 tput cup $(($lines+1)) 0
-    echo -n "#"
-    for ((i=0; i<$((cols-2)); i++)); do
-        echo -n "-"
-    done
-    echo -n "#"
+border="#"$(printf "%0.s-" $(seq 1 $((cols-2))))"#"
 draw_jorek
 draw_options
 start_option
