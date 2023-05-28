@@ -42,16 +42,16 @@ generate_mouse() {
 }
 
 iniciate_snake() {
-    length=1
+    length=2
     tail_row=$((new_zero_row+6))
     tail_column=$((new_zero_column+10))
     head="█"
     head_row=$((new_zero_row+6))
     head_column=$((new_zero_column+11))
-    snake[0,0]=$((new_zero_row+6))
-    snake[0,1]=$((new_zero_column+11))
     snake[1,0]=$((new_zero_row+6))
-    snake[1,1]=$((new_zero_column+10))
+    snake[1,1]=$((new_zero_column+11))
+    snake[2,0]=$((new_zero_row+6))
+    snake[2,1]=$((new_zero_column+10))
 }
 
 #Read
@@ -74,8 +74,8 @@ new_tail() {
     board[$((tail_row-new_zero_row)),$((tail_column-new_zero_column))]=" "
     old_tail_row=$tail_row
     old_tail_column=$tail_column
-    tail_row=$head_row
-    tail_column=$head_column
+    tail_row=snake[$(($length-1)),0]
+    tail_column=snake[$(($length-1)),0]
 }
 
 
@@ -96,8 +96,13 @@ snake_move() {
             ;;    
     esac
     if ((head_column==mouse_column && head_row==mouse_row)); then
-        score=$((score+1))
+        score=$(($score+1))
+        length=$(($lenght+1))
         generate_mouse
+        for ((i=0; i<length; i++)); do
+            snake[$((length+1-i)),0]=
+            snake[$((length+1-i)),1]
+        done
         tail_column=$old_tail_column
         tail_row=$old_tail_row
         draw_tail
@@ -118,6 +123,8 @@ for ((i=0; i<rows+2; i++)); do
     done
   echo
 done
+tput cup $(($new_zero_rows+12)) $new_zero_column
+echo "Score: $score"
 }
 
 draw_head() {

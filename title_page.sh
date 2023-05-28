@@ -63,7 +63,7 @@ start_option() {
     read -rsn1 KEY
     case "$KEY" in
         "x") 
-            source ./newest_version.sh
+            source ./jorek.sh
             ;;
         "s")
             tput cup $arrow_line $((options_column-2))
