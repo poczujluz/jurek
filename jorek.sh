@@ -8,6 +8,7 @@ declare game_over=false
 score=0
 SNAKE_COLOR='\033[0;32m'
 MOUSE_COLOR='\033[0;37m'
+mouse="■" 
 
 make_simple_board() {
     rows=10
@@ -32,11 +33,19 @@ make_simple_board() {
     board[$((rows+1)),$((columns+1))]="╝"
 }
 
+generate_no_snake_food_position() {
+    found=0
+    while (($found == 0)); do
+        mouse_row=$(((1+$new_zero_row) + $RANDOM%10))
+	    mouse_column=$(((1+$new_zero_column) + $RANDOM%20))
+        if [ "${board[$((mouse_row-new_zero_row)),$((mouse_column-new_zero_column))]}" = " " ]; then
+            found=1
+        fi
+    done
+}
 
 generate_mouse() {
-    mouse="■" 
-    mouse_row=$(((1+$new_zero_row) + $RANDOM%10))
-	mouse_column=$(((1+$new_zero_column) + $RANDOM%20))
+    generate_no_snake_food_position
     tput cup $mouse_row $mouse_column
     echo -en "${MOUSE_COLOR}$mouse"
 }
@@ -166,10 +175,9 @@ draw_snake() {
 #Game main
 tput civis
 clear
-tput cup 0 0
-border="#"$(printf "%0.s-" $(seq 1 $((cols-2))))"#"
-tput cup $(($lines+1)) 0
-border="#"$(printf "%0.s-" $(seq 1 $((cols-2))))"#"
+echo -e $border
+tput cup $lines 0
+echo -e $border
 make_simple_board
 out_board
 iniciate_snake

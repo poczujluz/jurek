@@ -1,8 +1,6 @@
 #!/bin/bash
 
 clear
-
-border="#"$(printf "%0.s-" $(seq 1 $((cols-2))))"#"
 echo -n $border
 tput cup $lines 0
 echo -n $border
